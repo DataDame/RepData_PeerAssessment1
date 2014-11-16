@@ -37,7 +37,7 @@ hist(as.numeric(aDatabyday$TotalSteps), xlab="TotalSteps by Date", main="Histogr
 ```{r}
 ##Calc mean by date
 aDataMeanbyday<-aggregate(aData$steps ~ aData$date,data=aData,FUN=mean)
-colnames(aDataMeanbyday)<-c("Date","MeanSteps")
+colnames(aDataMeanbyday)<-c("Date","  MeanSteps")
 print(aDataMeanbyday)
 ```
 
@@ -76,7 +76,7 @@ maxinterval<-aDataMeanbyInterval[aDataMeanbyInterval$MeanSteps==max(aDataMeanbyI
 print(maxinterval)
 ```
 
-**Imputing missing values**
+**Imputing missing values**  
 Total number of missing values
 ```{r}
 ##total number of missing values
@@ -102,7 +102,7 @@ hist(aDataImputbyday$TotalSteps, xlab="TotalSteps by Date", main="Histogram of T
 ```{r}
 ##Calc mean by date
 aDataImputMeanbyday<-aggregate(aDataImput$steps ~ aDataImput$date,data=aDataImput,FUN=mean)
-colnames(aDataImputMeanbyday)<-c("Date","MeanSteps")
+colnames(aDataImputMeanbyday)<-c("Date","  MeanSteps")
 print(aDataImputMeanbyday)
 ```
 
@@ -124,7 +124,7 @@ mean(aDataImputbyday$TotalSteps)
 median(aDataImputbyday$TotalSteps)
 ```
 
-**Analysis**
+**Analysis**  
 After imputation, the mean of Total steps remains the same, however the median for total steps is slightly higher. The mean per day is the same, however we now have mean for days that were previously missing due to all NA's. The median per day was 0 for all days earlier, but now we have a median of 34.1 for days that were missing values.
 It appears the subject forgot to wear the activity device on certain days and all readings for those days are missing - 10/01/2012, 10/08/2012, 11/01/2012, 11/04/2012, 11/09/2012, 11/10/2012,11/14/2012 and 11/30/2012. The Total steps for these days comes out to 10766.2 based on the imputed values. Henceforth the histogram plot shows higher frequencies for the 10,000 - 15,000 range.
 
@@ -142,7 +142,7 @@ colnames(aDataImputMeanbyInterval)<-c("type","Interval","MeanSteps")
 xyplot(aDataImputMeanbyInterval$MeanSteps~aDataImputMeanbyInterval$Interval | type ,type="l",data=aDataImputMeanbyInterval,layout=c(1,2), col="red", xlab="Interval", ylab = "Average steps across all days")
 ```
 
-**Conclusion**
+**Conclusion**  
 The activity pattern for weekday vs weekend clearly indicates that the subject is more active on weekends than weekdays. 
 
 
