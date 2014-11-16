@@ -30,7 +30,7 @@ par(mfrow=c(1,1))
 hist(as.numeric(aDatabyday$TotalSteps), xlab="TotalSteps by Date", main="Histogram of Total Steps by Date", col="light blue")
 ```
 
-![](./RR_PeerAss1_files/figure-html/unnamed-chunk-2-1.png) 
+![](./PA1_template_files/figure-html/unnamed-chunk-2-1.png) 
 
 **Mean steps taken by day:**
 
@@ -196,7 +196,7 @@ colnames(aDataMeanbyInterval)<-c("Interval","MeanSteps")
 plot(aDataMeanbyInterval$Interval,aDataMeanbyInterval$MeanSteps,type="l", xlab="Interval", ylab="Average steps", main="Average Steps by Interval across all days", col="blue")
 ```
 
-![](./RR_PeerAss1_files/figure-html/unnamed-chunk-7-1.png) 
+![](./PA1_template_files/figure-html/unnamed-chunk-7-1.png) 
 
 The 5 minute interval that has the maximum number of total steps taken by date is: 
 
@@ -238,7 +238,7 @@ colnames(aDataImputbyday)<-c("Date","TotalSteps")
 hist(aDataImputbyday$TotalSteps, xlab="TotalSteps by Date", main="Histogram of Total Steps by Date with Imputation", col="pink")
 ```
 
-![](./RR_PeerAss1_files/figure-html/unnamed-chunk-11-1.png) 
+![](./PA1_template_files/figure-html/unnamed-chunk-11-1.png) 
 
 **Mean steps taken by day after imputation:**  
 
@@ -427,7 +427,7 @@ colnames(aDataImputMeanbyInterval)<-c("type","Interval","MeanSteps")
 xyplot(aDataImputMeanbyInterval$MeanSteps~aDataImputMeanbyInterval$Interval | type ,type="l",data=aDataImputMeanbyInterval,layout=c(1,2), col="red", xlab="Interval", ylab = "Average steps across all days")
 ```
 
-![](./RR_PeerAss1_files/figure-html/unnamed-chunk-16-1.png) 
+![](./PA1_template_files/figure-html/unnamed-chunk-16-1.png) 
 
 **Conclusion**  
 The activity pattern for weekday vs weekend clearly indicates that the subject is more active on weekends than weekdays. 
