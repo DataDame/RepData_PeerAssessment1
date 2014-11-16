@@ -1,0 +1,150 @@
+---
+output:
+  html_document:
+    keep_md: yes
+---
+
+###                                   Title: Reproducible Research Peer Assessment 1
+
+Author: Suma Krishnaprasad  
+Date: November 15, 2014  
+
+This assignment makes use of data from a personal activity monitoring device. This device collects data at 5 minute intervals through out the day. The data consists of two months of data from an anonymous individual collected during the months of October and November, 2012 and include the number of steps taken in 5 minute intervals each day.
+
+The following analysis provides answers to various analytical questions posed.
+
+**Loading and pre-processing the data:**
+```{r}
+library(lattice)
+
+##read file and remove NAs
+aDataOrig<-read.csv("activity.csv",colClasses=c('numeric','Date','numeric'))
+aData<-aDataOrig[complete.cases(aDataOrig),]
+```
+
+**Mean total number of steps taken per day**
+```{r}
+## Aggregate by date
+aDatabyday<-aggregate(aData$steps ~ aData$date,data=aData,FUN=sum)
+colnames(aDatabyday)<-c("Date","TotalSteps")
+
+##Plot histogram
+par(mfrow=c(1,1))
+hist(as.numeric(aDatabyday$TotalSteps), xlab="TotalSteps by Date", main="Histogram of Total Steps by Date", col="light blue")
+```
+
+**Mean steps taken by day:**
+```{r}
+##Calc mean by date
+aDataMeanbyday<-aggregate(aData$steps ~ aData$date,data=aData,FUN=mean)
+colnames(aDataMeanbyday)<-c("Date","MeanSteps")
+print(aDataMeanbyday)
+```
+
+**Median steps taken by day:**
+```{r}
+##Calc median by date
+aDataMedianbyday<-aggregate(aData$steps ~ aData$date,data=aData,FUN=median)
+colnames(aDataMedianbyday)<-c("Date","MedianSteps")
+print(aDataMedianbyday)
+```
+
+**Mean of Total Steps by day:**  
+```{r}  
+mean(aDatabyday$TotalSteps)
+```
+
+**Median of Total Steps by day:** 
+```{r}  
+median(aDatabyday$TotalSteps)
+```
+
+**Average daily activity pattern**  
+Time series plot of average number of steps taken every 5-minute interval across all days
+```{r}
+##Calc mean by 5-min interval across all days
+aDataMeanbyInterval<-aggregate(aData$steps ~ aData$interval,data=aData,FUN=mean)
+colnames(aDataMeanbyInterval)<-c("Interval","MeanSteps")
+
+##time series plot of mean by 5-min interval across all days
+plot(aDataMeanbyInterval$Interval,aDataMeanbyInterval$MeanSteps,type="l", xlab="Interval", ylab="Average steps", main="Average Steps by Interval across all days", col="blue")
+```
+
+The 5 minute interval that has the maximum number of total steps taken by date is: 
+```{r}
+maxinterval<-aDataMeanbyInterval[aDataMeanbyInterval$MeanSteps==max(aDataMeanbyInterval$MeanSteps),1]
+print(maxinterval)
+```
+
+**Imputing missing values**
+Total number of missing values
+```{r}
+##total number of missing values
+nrow(subset(aDataOrig, is.na(aDataOrig$steps)))
+```
+
+Replace missing values with average of steps taken for that interval across all days
+```{r}
+##Replace NAs with average by 5 min interval across all days
+aDataImput<-merge(aDataMeanbyInterval,aDataOrig, by.x="Interval",by.y="interval",all.y)
+aDataImput[is.na(aDataImput$steps),]$steps<-aDataImput[is.na(aDataImput$steps),]$MeanSteps
+```
+
+**Plot a histogram of Total steps after imputing values**  
+```{r}
+##histogram with imputed values
+aDataImputbyday<-aggregate(aDataImput$steps ~ aDataImput$date,data=aDataImput,FUN=sum)
+colnames(aDataImputbyday)<-c("Date","TotalSteps")
+hist(aDataImputbyday$TotalSteps, xlab="TotalSteps by Date", main="Histogram of Total Steps by Date with Imputation", col="pink")
+```
+
+**Mean steps taken by day after imputation:**  
+```{r}
+##Calc mean by date
+aDataImputMeanbyday<-aggregate(aDataImput$steps ~ aDataImput$date,data=aDataImput,FUN=mean)
+colnames(aDataImputMeanbyday)<-c("Date","MeanSteps")
+print(aDataImputMeanbyday)
+```
+
+**Median steps taken by day after imputation:**  
+```{r}
+##Calc median by date
+aDataImputMedianbyday<-aggregate(aDataImput$steps ~ aDataImput$date,data=aDataImput,FUN=median)
+colnames(aDataImputMedianbyday)<-c("Date","MedianSteps")
+print(aDataImputMedianbyday)
+```
+
+**Mean of Total Steps by day after imputation:**  
+```{r}  
+mean(aDataImputbyday$TotalSteps)
+```
+
+**Median of Total Steps by day after imputation:**   
+```{r}  
+median(aDataImputbyday$TotalSteps)
+```
+
+**Analysis**
+After imputation, the mean of Total steps remains the same, however the median for total steps is slightly higher. The mean per day is the same, however we now have mean for days that were previously missing due to all NA's. The median per day was 0 for all days earlier, but now we have a median of 34.1 for days that were missing values.
+It appears the subject forgot to wear the activity device on certain days and all readings for those days are missing - 10/01/2012, 10/08/2012, 11/01/2012, 11/04/2012, 11/09/2012, 11/10/2012,11/14/2012 and 11/30/2012. The Total steps for these days comes out to 10766.2 based on the imputed values. Henceforth the histogram plot shows higher frequencies for the 10,000 - 15,000 range.
+
+**Activity pattern comparison between weekdays and weekends**
+```{r}
+##Add a factor column for weekdays vs weekend
+aDataImput$type<-paste("weekday")
+aDataImput[which(weekdays(aDataImput$date)==c("Saturday","Sunday")),]$type<-"weekend"
+
+##Calc mean by 5-min interval across all weekdays
+aDataImputMeanbyInterval<-aggregate(aDataImput$steps ~ aDataImput$type + aDataImput$Interval,data=aDataImput,FUN=mean)
+colnames(aDataImputMeanbyInterval)<-c("type","Interval","MeanSteps")
+
+##time series plot of mean by 5-min interval by type
+xyplot(aDataImputMeanbyInterval$MeanSteps~aDataImputMeanbyInterval$Interval | type ,type="l",data=aDataImputMeanbyInterval,layout=c(1,2), col="red", xlab="Interval", ylab = "Average steps across all days")
+```
+
+**Conclusion**
+The activity pattern for weekday vs weekend clearly indicates that the subject is more active on weekends than weekdays. 
+
+
+
+
